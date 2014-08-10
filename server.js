@@ -22,7 +22,6 @@ sock.on('connection', function(conn) {
   conn.on('close', function() {});
 });
 
-store = redis.createClient();
 
 app = express();
 app.use(bodyParser.urlencoded({extended: true}));
@@ -35,6 +34,15 @@ app.get('/session', function (req, res) {
     res.send(result.map(JSON.parse));
   });
 });
+
+
+if (process.env.REDISTOGO_URL) {
+  var rtg   = require("url").parse(process.env.REDISTOGO_URL);
+  store = redis.createClient(rtg.port, rtg.hostname);
+  store.auth(rtg.auth.split(":")[1]);
+} else {
+  store = redis.createClient();
+}
 
 store.on('ready', function () {
   var server = http.createServer(app).listen(app.get('port'), function(){
