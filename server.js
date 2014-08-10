@@ -49,5 +49,5 @@ store.on('ready', function () {
     console.log('Express server listening on port ' + app.get('port'));
   });
 
-  ///sock.installHandlers(server, {prefix: 'socket'});
+  //sock.installHandlers(server, {prefix: 'socket'});
 });
