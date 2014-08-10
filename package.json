@@ -1,0 +1,20 @@
+{
+  "name": "event-store",
+  "version": "0.0.0",
+  "description": "Store for client-side eventsourcing",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "bas.benzineb@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "connect": "~3.1.0",
+    "sockjs": "~0.3.9",
+    "redis": "~0.12.0",
+    "hiredis": "~0.1.17",
+    "express": "~4.8.2",
+    "body-parser": "~1.6.2",
+    "method-override": "~2.1.2"
+  }
+}
