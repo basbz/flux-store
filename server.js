@@ -30,6 +30,10 @@ function CORS(origin, methods) {
   };
 }
 
+app.get('/', function (__, res) {
+  res.send('Hello World!');
+});
+
 app.options('/event', CORS('*', 'POST'), function (req, res) {
   res.send(200);
 });
@@ -39,10 +43,10 @@ app.post('/event', bodyParser.json(), CORS('*', 'POST'), function (req, res) {
   res.send(200);
 });
 
-store = redis.createClient();
+//store = redis.createClient();
 
-store.on('ready', function boot () {
+//store.on('ready', function boot () {
   var port = app.get('port');
 
   app.listen(port, log.bind(null, 'Express server listening on port:' + port));
-});
+//});
