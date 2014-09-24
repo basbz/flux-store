@@ -1,5 +1,6 @@
-var express = require('express'),
-    redis = require("redis").createClient(),
+var app, store, log = console.log.bind(console),
+    redis = require("redis"),
+    express = require('express'),
     bodyParser = require('body-parser'),
     methodOverride = require('method-override');
 
@@ -9,17 +10,39 @@ var express = require('express'),
   //return msg;
 //}
 
-function boot (store)  {
-  var app = express();
-  app.use(bodyParser.urlencoded({extended: true}));
-  app.use(bodyParser.json());
-  app.use(methodOverride());          // simulate DELETE and PUT
-  app.set('port', process.env.PORT || 9999);
+app = express();
 
-  app.post('/session', function (req, res) {
-    console.log(arguments);
-    res.send({ok: true});
-  });
+app.use(bodyParser.urlencoded({extended: true}));
+app.set('port', process.env.PORT || 3030);
+//app.use(methodOverride());          // simulate DELETE and PUT
+
+// development only
+if ('development' == app.get('env'))
+ app.use(require('errorhandler')());
+
+
+function CORS(origin, methods) {
+  return function (__, res, next) {
+    res.header("Access-Control-Allow-Origin", origin);
+    res.header('Access-Control-Allow-Methods', [].concat(methods).join(', '));
+    res.header('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization');
+    next();
+  };
 }
 
-redis.on('ready', boot.bind(null, redis));
+app.options('/event', CORS('*', 'POST'), function (req, res) {
+  res.send(200);
+});
+
+app.post('/event', bodyParser.json(), CORS('*', 'POST'), function (req, res) {
+  log(req.body);
+  res.send(200);
+});
+
+store = redis.createClient();
+
+store.on('ready', function boot () {
+  var port = app.get('port');
+
+  app.listen(port, log.bind(null, 'Express server listening on port:' + port));
+});
