@@ -1,20 +1,12 @@
 var app, store, log = console.log.bind(console),
     redis = require("redis"),
     express = require('express'),
-    bodyParser = require('body-parser'),
-    methodOverride = require('method-override');
-
-
-//function push (msg) {
-  //store.lpush('actions', msg, redis.print);
-  //return msg;
-//}
+    bodyParser = require('body-parser');
 
 app = express();
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.set('port', process.env.PORT || 3030);
-//app.use(methodOverride());          // simulate DELETE and PUT
 
 // development only
 if ('development' == app.get('env'))
@@ -31,17 +23,17 @@ function CORS(origin, methods) {
 }
 
 app.options('/event/:address', CORS('*', 'POST'), function (req, res) {
-  res.send(200);
+  res.status(200).send();
 });
 
 app.post('/event/:address', bodyParser.json(), CORS('*', 'POST'), function (req, res) {
   var data = ([].concat(req.body)).map(JSON.stringify);
 
-  store.rpush.apply(store, [req.params.address].concat(data), function (err) {
+  store.rpush([req.params.address].concat(data), function (err) {
     if(err)
-      res.send(500);
+      return res.status(500).send();
 
-    res.send(200);
+    res.status(200).send();
   });
 });
 
