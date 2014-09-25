@@ -23,7 +23,7 @@ function CORS(origin, methods) {
 }
 
 app.options('/event/:address', CORS('*', 'POST'), function (req, res) {
-  res.status(200).send();
+  res.status(200).send(200);
 });
 
 app.post('/event/:address', bodyParser.json(), CORS('*', 'POST'), function (req, res) {
@@ -31,9 +31,9 @@ app.post('/event/:address', bodyParser.json(), CORS('*', 'POST'), function (req,
 
   store.rpush([req.params.address].concat(data), function (err) {
     if(err)
-      return res.status(500).send();
+      return res.status(500).send(500);
 
-    res.status(200).send();
+    res.status(200).send(200);
   });
 });
 
