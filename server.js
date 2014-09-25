@@ -30,23 +30,25 @@ function CORS(origin, methods) {
   };
 }
 
-app.get('/', function (__, res) {
-  res.send('Hello World!');
-});
-
-app.options('/event', CORS('*', 'POST'), function (req, res) {
+app.options('/event/:address', CORS('*', 'POST'), function (req, res) {
   res.send(200);
 });
 
-app.post('/event', bodyParser.json(), CORS('*', 'POST'), function (req, res) {
-  log(req.body);
-  res.send(200);
+app.post('/event/:address', bodyParser.json(), CORS('*', 'POST'), function (req, res) {
+  var data = ([].concat(req.body)).map(JSON.stringify);
+
+  store.rpush.apply(store, [req.params.address].concat(data), function (err) {
+    if(err)
+      res.send(500);
+
+    res.send(200);
+  });
 });
 
-//store = redis.createClient();
+store = redis.createClient();
 
-//store.on('ready', function boot () {
+store.on('ready', function boot () {
   var port = app.get('port');
 
   app.listen(port, log.bind(null, 'Express server listening on port:' + port));
-//});
+});
